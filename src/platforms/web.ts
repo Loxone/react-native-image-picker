@@ -157,3 +157,4 @@ function getWebMediaType(mediaType: MediaType) {
 
   return webMediaTypes[mediaType] ?? webMediaTypes.photo;
 }
+
