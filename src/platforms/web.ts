@@ -68,7 +68,7 @@ export function imageLibrary(
             includeBase64: options.includeBase64,
           });
 
-          const result = {assets: [img]};
+          const result = { assets: [img] };
 
           if (callback) callback(result);
 
@@ -76,7 +76,7 @@ export function imageLibrary(
         } else {
           const imgs = await Promise.all(
             Array.from(input.files).map((file) =>
-              readFile(file, {includeBase64: options.includeBase64}),
+              readFile(file, { includeBase64: options.includeBase64 }),
             ),
           );
 
@@ -103,48 +103,11 @@ function readFile(
   options: Partial<ImageLibraryOptions>,
 ): Promise<Asset> {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => {
-      reject(
-        new Error(
-          `Failed to read the selected media because the operation failed.`,
-        ),
-      );
-    };
-    reader.onload = ({target}) => {
-      const uri = target?.result;
-
-      const returnRaw = () =>
-        resolve({
-          uri: uri as string,
-          width: 0,
-          height: 0,
-        });
-
-      if (typeof uri === 'string') {
-        const image = new Image();
-        image.src = uri;
-        image.onload = () =>
-          resolve({
-            uri,
-            width: image.naturalWidth ?? image.width,
-            height: image.naturalHeight ?? image.height,
-            // The blob's result cannot be directly decoded as Base64 without
-            // first removing the Data-URL declaration preceding the
-            // Base64-encoded data. To retrieve only the Base64 encoded string,
-            // first remove data:*/*;base64, from the result.
-            // https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsDataURL
-            ...(options.includeBase64 && {
-              base64: uri.substr(uri.indexOf(',') + 1),
-            }),
-          });
-        image.onerror = () => returnRaw();
-      } else {
-        returnRaw();
-      }
-    };
-
-    reader.readAsDataURL(targetFile);
+    new Response(targetFile).arrayBuffer().then((buffer) => {
+      resolve({
+        uri: buffer,
+      });
+    });
   });
 }
 
@@ -157,4 +120,3 @@ function getWebMediaType(mediaType: MediaType) {
 
   return webMediaTypes[mediaType] ?? webMediaTypes.photo;
 }
-

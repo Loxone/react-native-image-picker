@@ -30,7 +30,7 @@ export interface CameraOptions extends OptionsCommon {
 
 export interface Asset {
   base64?: string;
-  uri?: string;
+  uri?: unknown;
   width?: number;
   height?: number;
   fileSize?: number;
@@ -66,4 +66,3 @@ export type MediaType = 'photo' | 'video' | 'mixed';
 export type AndroidVideoOptions = 'low' | 'high';
 export type iOSVideoOptions = 'low' | 'medium' | 'high';
 export type ErrorCode = 'camera_unavailable' | 'permission' | 'others';
-
